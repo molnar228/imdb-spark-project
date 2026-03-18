@@ -10,7 +10,7 @@ ARG PYSPARK_VERSION
 
 COPY --from=py3 / /
 
-RUN pip --no-cache-dir install pyspark==${PYSPARK_VERSION}
+RUN pip --no-cache-dir install pyspark==${PYSPARK_VERSION} pandas matplotlib
 
 COPY . .
 
