@@ -1,0 +1,7 @@
+data/
+*.csv
+*.parquet
+*.tar
+.venv/
+.git/
+docker-desktop.tar
