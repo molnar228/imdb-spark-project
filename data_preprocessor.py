@@ -5,12 +5,8 @@ from pyspark.sql.types import IntegerType, BooleanType
 def clean_basics(df_basics):
     print("--- Очищення таблиці Basics ---")
 
-    # ПУНКТ 4: Вилучення неінформативних ознак.
-    # endYear майже завжди пустий для фільмів, originalTitle часто дублює primaryTitle.
     df_cleaned = df_basics.drop("endYear", "originalTitle")
 
-    # ПУНКТ 3: Приведення до потрібного типу та парсинг.
-    # IMDB використовує '\N' для пустих значень. Замінюємо їх на справжній null і міняємо тип на числа.
     df_cleaned = df_cleaned.withColumn(
         "startYear",
         F.when(F.col("startYear") == "\\N", None).otherwise(F.col("startYear")).cast(IntegerType())
