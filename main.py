@@ -2,9 +2,13 @@ import os
 import sys
 import platform
 from pyspark.sql import SparkSession
+
+# Імпортуємо всі наші модулі
 from data_loader import get_imdb_dataframes
 from data_visualizer import plot_movies_per_year, plot_ratings_distribution
+from data_preprocessor import clean_basics, clean_ratings, print_statistics
 
+# --- Налаштування середовища ---
 if platform.system() == "Windows":
     os.environ['PYSPARK_PYTHON'] = sys.executable
     os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
@@ -16,22 +20,34 @@ else:
     DATA_DIR = "/data"
     OUT_DIR = "/data"
 
-spark = SparkSession.builder.appName("IMDB_Visualization").getOrCreate()
+spark = SparkSession.builder.appName("IMDB_Pipeline").getOrCreate()
 
 try:
-    df_basics, df_ratings = get_imdb_dataframes(spark, DATA_DIR)
+    # ВИДОБУВАННЯ ДАНИХ
+    # print("\n--- ЕТАП 1: ВИДОБУВАННЯ ---")
+    df_basics_raw, df_ratings_raw = get_imdb_dataframes(spark, DATA_DIR)
 
-    print("\n--- ПЕРЕВІРКА ЗЧИТУВАННЯ BASICS ---")
-    df_basics.show(5)
+    # print("Перевірка Basics:")
+    # df_basics_raw.show(5)
 
-    print("\n--- ПЕРЕВІРКА ЗЧИТУВАННЯ RATINGS ---")
-    df_ratings.show(5)
+    #ВІЗУАЛІЗАЦІЯ
 
-    print("\n--- ПОЧИНАЮ СТВОРЕННЯ ГРАФІКІВ ---")
-    plot_movies_per_year(df_basics, OUT_DIR)
-    plot_ratings_distribution(df_ratings, OUT_DIR)
+    # print("\n--- СТВОРЕННЯ ГРАФІКІВ ---")
+    # plot_movies_per_year(df_basics_raw, OUT_DIR)
+    # plot_ratings_distribution(df_ratings_raw, OUT_DIR)
 
-    print("Всі операції завершено успішно!")
+    #ПОПЕРЕДНЯ ОБРОБКА
+    print("\n--- ЕТАП 2: ПОПЕРЕДНЯ ОБРОБКА (Очищення) ---")
+
+    df_basics_clean = clean_basics(df_basics_raw)
+    df_ratings_clean = clean_ratings(df_ratings_raw)
+
+    print_statistics(df_basics_clean, df_ratings_clean)
+
+    print("\n--- ПЕРЕВІРКА ОЧИЩЕНИХ ДАНИХ BASICS ---")
+    df_basics_clean.show(5)
+
+    print("\nВсі операції завершено успішно!")
 
 finally:
     spark.stop()
