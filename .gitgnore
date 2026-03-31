@@ -1,4 +1,8 @@
 data/
+results/
+*.csv
+*.tsv
+
 output/
 temp/
 *.gz
@@ -16,3 +20,4 @@ ENV/
 .idea/
 .vscode/
 *.swp
+

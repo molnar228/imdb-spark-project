@@ -51,8 +51,7 @@ try:
     # ТРАНСФОРМАЦІЯ
     print("\n--- ЕТАП 3: ТРАНСФОРМАЦІЯ ТА АНАЛІТИКА ---")
 
-
-    execute_business_queries(df_basics_clean, df_ratings_clean)
+    execute_business_queries(df_basics_clean, df_ratings_clean, OUT_DIR)
 
     print("\n" + "=" * 50)
     print("ВИКОНАНО УСПІШНО!")

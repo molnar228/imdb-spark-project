@@ -1,7 +1,9 @@
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
+import os
 
-def execute_business_queries(df_basics, df_ratings):
+
+def execute_business_queries(df_basics, df_ratings, output_dir="."):
     print("\n" + "="*50)
     print("ЕТАП ТРАНСФОРМАЦІЇ: ВИКОНАННЯ БІЗНЕС-ПИТАНЬ")
     print("="*50)
@@ -76,3 +78,28 @@ def execute_business_queries(df_basics, df_ratings):
                   .limit(5)
     q6.select("primaryTitle", "startYear", "runtimeMinutes", "genres").show(truncate=False)
     q6.explain()
+
+    # запису результатів
+    print("\n" + "=" * 50)
+    print("ЗБЕРЕЖЕННЯ РЕЗУЛЬТАТІВ У ФОРМАТІ CSV")
+    print("=" * 50)
+
+    results_dir = os.path.join(output_dir, "results")
+
+    q1.select("primaryTitle", "startYear", "averageRating", "numVotes") \
+        .coalesce(1).write.csv(os.path.join(results_dir, "q1_top_movies"), header=True, mode="overwrite")
+
+    q2.coalesce(1).write.csv(os.path.join(results_dir, "q2_runtime_trend"), header=True, mode="overwrite")
+
+    q3.select("startYear", "primaryTitle", "averageRating", "numVotes") \
+        .coalesce(1).write.csv(os.path.join(results_dir, "q3_movie_of_the_year"), header=True, mode="overwrite")
+
+    q4.coalesce(1).write.csv(os.path.join(results_dir, "q4_top_genres"), header=True, mode="overwrite")
+
+    q5.select("primaryTitle", "genres", "averageRating", "genre_avg", "rating_diff") \
+        .coalesce(1).write.csv(os.path.join(results_dir, "q5_genre_diff"), header=True, mode="overwrite")
+
+    q6.select("primaryTitle", "startYear", "runtimeMinutes", "genres") \
+        .coalesce(1).write.csv(os.path.join(results_dir, "q6_documentaries"), header=True, mode="overwrite")
+
+    print(f"Файли успішно збережено у папку: {results_dir}")
