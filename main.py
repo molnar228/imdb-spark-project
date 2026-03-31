@@ -3,12 +3,11 @@ import sys
 import platform
 from pyspark.sql import SparkSession
 
-# Імпортуємо всі наші модулі
 from data_loader import get_imdb_dataframes
 from data_visualizer import plot_movies_per_year, plot_ratings_distribution
 from data_preprocessor import clean_basics, clean_ratings, print_statistics
+from data_transformer import execute_business_queries
 
-# --- Налаштування середовища ---
 if platform.system() == "Windows":
     os.environ['PYSPARK_PYTHON'] = sys.executable
     os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
@@ -49,5 +48,14 @@ try:
 
     print("\nВсі операції завершено успішно!")
 
+    # ТРАНСФОРМАЦІЯ
+    print("\n--- ЕТАП 3: ТРАНСФОРМАЦІЯ ТА АНАЛІТИКА ---")
+
+
+    execute_business_queries(df_basics_clean, df_ratings_clean)
+
+    print("\n" + "=" * 50)
+    print("ВИКОНАНО УСПІШНО!")
+    print("=" * 50)
 finally:
     spark.stop()
